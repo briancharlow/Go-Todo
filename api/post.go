@@ -1,27 +1,26 @@
 package api
 
 import (
-	"encoding/json"
-
 	"net/http"
-
 	"todo.com/go/model"
+
+	"github.com/gin-gonic/gin"
 )
 
-func CreateTodo(w http.ResponseWriter, r *http.Request){
-	
-	if r.Method != http.MethodPost {
-		http.Error(w, "Invalid Method", http.StatusBadRequest)
+func CreateTodo(c *gin.Context) {
+	var todo model.Todo
+
+	if err := c.ShouldBindJSON(&todo); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON"})
 		return
-	} else {
-		var todo model.Todo
-		
-		err := json.NewDecoder(r.Body).Decode(&todo)
-		if err != nil {
-			http.Error(w, "Invalid JSON", http.StatusBadRequest)
-			return
-		}
-		model.AddTodo(todo)
-		w.WriteHeader(http.StatusCreated)
 	}
+
+	model.AddTodo(todo)
+
+	response := model.Response{
+		Message: "Todo created successfully",
+		Todo:    todo,
+	}
+
+	c.JSON(http.StatusCreated, response)
 }
