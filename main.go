@@ -8,15 +8,16 @@ import (
 func main() {
 	router := gin.Default()
 
-	// Routes
-	router.POST("/create", api.CreateTodo)
 	router.GET("/", func(c *gin.Context) {
 		c.String(200, "Hello, World!")
 	})
-	router.GET("/todos", api.GetTodos)
 
-	// Start the server
-	err := router.Run(":8080") // Starts the server on port 8080
+	router.GET("/todos", api.GetTodos)
+	router.POST("/todos", api.CreateTodo)
+	router.PUT("/todos/:id", api.UpdateTodo)
+	router.DELETE("/todos/:id", api.DeleteTodo)
+
+	err := router.Run(":8080")
 	if err != nil {
 		panic(err)
 	}
